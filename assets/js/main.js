@@ -1,15 +1,17 @@
 /**
  * Christèle Guignand - Landing Page
- * Main JavaScript with Lenis Smooth Scroll + GSAP Animations
- * Version 3 - Enhanced animations with parallax and text split
+ * Lenis Smooth Scroll + GSAP Animations
  */
+
+// Force scroll to top on every page load/refresh
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
 
 (function() {
     'use strict';
 
-    // ===================================
-    // CONFIGURATION
-    // ===================================
     const CONFIG = {
         reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
         isMobile: window.matchMedia('(max-width: 768px)').matches,
@@ -278,19 +280,23 @@
             const image = container.querySelector('.js-parallax-image');
             if (!image) return;
 
-            // Set initial position
-            gsap.set(image, { yPercent: -10 });
+            // On mobile, don't apply translateX transform from GSAP (CSS handles centering)
+            const isMobile = window.innerWidth < 768;
 
-            gsap.to(image, {
-                yPercent: 10,
-                ease: 'none',
-                scrollTrigger: {
-                    trigger: container,
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: 1
+            gsap.fromTo(image,
+                { y: 0 },
+                {
+                    y: isMobile ? '10%' : '20%',
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: container,
+                        start: 'top top',
+                        end: 'bottom top',
+                        scrub: 1,
+                        invalidateOnRefresh: true
+                    }
                 }
-            });
+            );
         });
     }
 
@@ -590,7 +596,8 @@
                 trigger: timeline,
                 start: 'top 60%',
                 end: 'bottom 40%',
-                scrub: 1
+                scrub: 1,
+                invalidateOnRefresh: true
             }
         });
 
@@ -627,8 +634,8 @@
                         { y: '110%' },
                         {
                             y: '0%',
-                            duration: 0.6,
-                            stagger: 0.04,
+                            duration: 0.9,
+                            stagger: 0.05,
                             ease: 'power2.out',
                             scrollTrigger: {
                                 trigger: item,
@@ -649,8 +656,8 @@
                         { y: '110%' },
                         {
                             y: '0%',
-                            duration: 0.6,
-                            stagger: 0.06,
+                            duration: 0.9,
+                            stagger: 0.08,
                             ease: 'power2.out',
                             scrollTrigger: {
                                 trigger: item,
@@ -790,7 +797,7 @@
     }
 
     // ===================================
-    // HEADER - White background after 100vh
+    // HEADER - Simple scroll detection
     // ===================================
     function initHeader() {
         const header = document.querySelector('.header');
@@ -802,9 +809,11 @@
 
         function updateHeader() {
             const currentScroll = window.scrollY || document.documentElement.scrollTop;
+            const headerHeight = header.offsetHeight;
 
-            // Add/remove scrolled class after 100vh
-            if (currentScroll > heroHeight) {
+            // Add/remove scrolled class after hero
+            // Header stays transparent, section gradients show through
+            if (currentScroll > heroHeight - headerHeight) {
                 header.classList.add('scrolled');
             } else {
                 header.classList.remove('scrolled');
@@ -822,10 +831,7 @@
         updateHeader();
 
         // Update on resize
-        window.addEventListener('resize', () => {
-            // Recalculate hero height on resize
-            updateHeader();
-        });
+        window.addEventListener('resize', updateHeader);
     }
 
     // ===================================
@@ -912,7 +918,6 @@
     }
 
     function onDOMReady() {
-        // Initialize all modules
         initLenis();
         initGSAPAnimations();
         initCustomCursor();
@@ -921,12 +926,11 @@
         initMobileMenu();
         initFooterYear();
 
-        // Log initialization
-        console.log('Christèle Guignand - Landing Page initialized');
-
-        if (CONFIG.reducedMotion) {
-            console.log('Reduced motion preference detected - animations disabled');
-        }
+        // Refresh ScrollTrigger after all animations are set up
+        // This ensures correct calculations regardless of scroll position
+        requestAnimationFrame(() => {
+            ScrollTrigger.refresh();
+        });
     }
 
     // Handle resize for mobile detection update

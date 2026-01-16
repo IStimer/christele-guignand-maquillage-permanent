@@ -21,14 +21,12 @@
     /* Palette Rosée Premium */
     --rose-blush: #E8B4B8;
     --rose-poudre: #F5D0D0;
-    --rose-nude: #DCAE96;
     --rose-petale: #F8E1E1;
     --rose-intense: #C9929A;
     --blanc-rose: #FDF8F8;
     --blanc-pur: #FFFFFF;
     --gris-chaud: #4A4A4A;
     --gris-doux: #7A7A7A;
-    --rose-dore: #D4A5A5;
 
     /* Typography */
     --font-display: 'Milky Walky', 'Cormorant Garamond', Georgia, serif;
@@ -269,13 +267,6 @@ p:last-child {
     will-change: transform;
 }
 
-/* Char animation */
-.js-split-chars .char {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(100%);
-}
-
 /* ===================================
    7. CUSTOM CURSOR
    =================================== */
@@ -375,7 +366,6 @@ p:last-child {
 }
 
 .header-container {
-    max-width: var(--container-max);
     margin: 0 auto;
     padding: 0 var(--container-padding);
     display: flex;
@@ -412,7 +402,7 @@ p:last-child {
 
 .nav-link {
     font-size: var(--fs-sm);
-    font-weight: 500;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--gris-chaud);
@@ -426,7 +416,7 @@ p:last-child {
     bottom: 0;
     left: 0;
     width: 0;
-    height: 1px;
+    height: 2px;
     background-color: var(--rose-blush);
     transition: width var(--transition-base);
 }
@@ -516,7 +506,9 @@ p:last-child {
    =================================== */
 .hero {
     position: relative;
+    width: 100%;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -525,17 +517,35 @@ p:last-child {
 
 .hero-background {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
     z-index: -1;
     overflow: hidden;
 }
 
 .hero-image {
+    position: absolute;
+    top: -10%;
+    left: 0;
     width: 100%;
     height: 120%;
     object-fit: cover;
-    object-position: center;
+    object-position: center 20%;
     will-change: transform;
+}
+
+@media (max-width: 767px) {
+    .hero-image {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100vw;
+        min-width: 100vw;
+        object-position: center center;
+    }
 }
 
 /* Gradient overlay at bottom for text readability */
@@ -571,9 +581,9 @@ p:last-child {
 }
 
 .hero-subtitle {
-    font-family: var(--font-sans);
-    font-size: var(--fs-md);
-    font-weight: 400;
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.3em;
     color: var(--blanc-pur);
@@ -695,7 +705,13 @@ p:last-child {
    11. PRESTATIONS SECTION
    =================================== */
 .prestations {
-    background-color: var(--blanc-rose);
+    /* Séparation nette avec hero, transition douce vers déroulement */
+    background: linear-gradient(
+        180deg,
+        var(--blanc-rose) 0%,
+        var(--blanc-rose) 85%,
+        var(--rose-poudre) 100%
+    );
 }
 
 .prestation-item {
@@ -793,22 +809,14 @@ p:last-child {
    12. DÉROULEMENT / TIMELINE SECTION
    =================================== */
 .deroulement {
+    /* Transition: rose-poudre (from prestations) -> rose-poudre -> blanc-rose (to apropos) */
     background: linear-gradient(
-        135deg,
-        var(--rose-petale) 0%,
-        var(--rose-poudre) 25%,
-        var(--blanc-rose) 50%,
-        var(--rose-petale) 75%,
-        var(--rose-poudre) 100%
+        180deg,
+        var(--rose-poudre) 0%,
+        var(--rose-poudre) 85%,
+        var(--blanc-rose) 100%
     );
-    background-size: 400% 400%;
-    animation: gradientFlow 15s ease infinite;
-}
-
-@keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    padding-bottom: 0;
 }
 
 .timeline {
@@ -946,7 +954,13 @@ p:last-child {
    13. À PROPOS SECTION
    =================================== */
 .apropos {
-    background-color: var(--blanc-rose);
+    /* Transition: blanc-rose (from deroulement) -> blanc-rose -> blanc-pur (to tarifs) */
+    background: linear-gradient(
+        180deg,
+        var(--blanc-rose) 0%,
+        var(--blanc-rose) 85%,
+        var(--blanc-pur) 100%
+    );
 }
 
 .apropos-grid {
@@ -1061,7 +1075,13 @@ p:last-child {
    14. TARIFS SECTION
    =================================== */
 .tarifs {
-    background-color: var(--blanc-pur);
+    /* Transition: blanc-pur (from apropos) -> blanc-pur -> rose-poudre (to contact) */
+    background: linear-gradient(
+        180deg,
+        var(--blanc-pur) 0%,
+        var(--blanc-pur) 85%,
+        var(--rose-poudre) 100%
+    );
 }
 
 .tarifs-list {
@@ -1152,9 +1172,11 @@ p:last-child {
    15. CONTACT SECTION - Elegant Compact
    =================================== */
 .contact {
+    /* Transition: rose-poudre (from tarifs) -> rose-poudre -> rose-petale (to footer) */
     background: linear-gradient(
         180deg,
-        var(--blanc-rose) 0%,
+        var(--rose-poudre) 0%,
+        var(--rose-poudre) 85%,
         var(--rose-petale) 100%
     );
     padding-top: var(--space-xxl);
