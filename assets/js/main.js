@@ -3,12 +3,6 @@
  * Lenis Smooth Scroll + GSAP Animations
  */
 
-// Force scroll to top on every page load/refresh
-if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
-}
-window.scrollTo(0, 0);
-
 (function() {
     'use strict';
 
@@ -280,23 +274,20 @@ window.scrollTo(0, 0);
             const image = container.querySelector('.js-parallax-image');
             if (!image) return;
 
-            // On mobile, don't apply translateX transform from GSAP (CSS handles centering)
             const isMobile = window.innerWidth < 768;
+            const yAmount = isMobile ? 10 : 20;
 
-            gsap.fromTo(image,
-                { y: 0 },
-                {
-                    y: isMobile ? '10%' : '20%',
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: container,
-                        start: 'top top',
-                        end: 'bottom top',
-                        scrub: 1,
-                        invalidateOnRefresh: true
-                    }
+            // Use onUpdate to calculate position based on scroll progress
+            // This works correctly regardless of initial scroll position
+            ScrollTrigger.create({
+                trigger: container,
+                start: 'top top',
+                end: 'bottom top',
+                invalidateOnRefresh: true,
+                onUpdate: (self) => {
+                    gsap.set(image, { y: `${self.progress * yAmount}%` });
                 }
-            );
+            });
         });
     }
 
@@ -919,18 +910,24 @@ window.scrollTo(0, 0);
 
     function onDOMReady() {
         initLenis();
-        initGSAPAnimations();
         initCustomCursor();
         initMagneticButtons();
         initHeader();
         initMobileMenu();
         initFooterYear();
 
-        // Refresh ScrollTrigger after all animations are set up
-        // This ensures correct calculations regardless of scroll position
-        requestAnimationFrame(() => {
+        // Wait for fonts before initializing text-based animations
+        // This ensures correct line splitting calculations
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+                initGSAPAnimations();
+                ScrollTrigger.refresh();
+            });
+        } else {
+            // Fallback for older browsers
+            initGSAPAnimations();
             ScrollTrigger.refresh();
-        });
+        }
     }
 
     // Handle resize for mobile detection update
