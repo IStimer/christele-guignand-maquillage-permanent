@@ -1168,6 +1168,14 @@ p:last-child {
     margin-top: var(--space-xs);
 }
 
+@media (max-width: 767px) {
+    .tarif-item--special {
+        margin-left: calc(-1 * var(--space-md));
+        margin-right: calc(-1 * var(--space-md));
+        padding: var(--space-lg);
+    }
+}
+
 /* ===================================
    15. CONTACT SECTION - Elegant Compact
    =================================== */
