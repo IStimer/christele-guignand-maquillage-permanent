@@ -49,13 +49,13 @@
 
                 const target = document.querySelector(targetId);
                 if (target) {
+                    // Close mobile menu FIRST to restart Lenis before scrolling
+                    closeMobileMenu();
+
                     lenis.scrollTo(target, {
                         offset: -80,
                         duration: 1.5
                     });
-
-                    // Close mobile menu if open
-                    closeMobileMenu();
                 }
             });
         });
